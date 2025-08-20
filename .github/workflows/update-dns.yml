@@ -1,0 +1,46 @@
+name: Update DNS Records
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_ip:
+        description: 'Target IP address for A records'
+        required: true
+        default: '76.76.21.21'
+      domain:
+        description: 'Domain to update'
+        required: true
+        default: 'mybenefitsvideos.com'
+
+jobs:
+  update-dns:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests
+        
+    - name: Update DNS records
+      env:
+        CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        CLOUDFLARE_EMAIL: ${{ secrets.CLOUDFLARE_EMAIL }}
+      run: |
+        python update_dns.py
+        
+    - name: Verify DNS changes
+      run: |
+        echo "Waiting 30 seconds for DNS propagation..."
+        sleep 30
+        echo "Checking DNS resolution:"
+        nslookup ${{ github.event.inputs.domain }} || true
+        dig +short ${{ github.event.inputs.domain }} || true
