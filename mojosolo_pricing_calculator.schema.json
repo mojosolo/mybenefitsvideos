@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Mojo Solo Pricing Calculator Schema (2025)",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "preset": {
+      "description": "Convenience presets for Good/Better/Best or 'custom'.",
+      "type": "string",
+      "enum": [
+        "good",
+        "better",
+        "best",
+        "custom"
+      ],
+      "default": "custom"
+    },
+    "foundation": {
+      "description": "Include the Foundation Package (required in most flows).",
+      "type": "boolean",
+      "default": true
+    },
+    "foundationMinutes": {
+      "description": "Minutes for the primary explainer; default is 2 for Foundation.",
+      "type": "integer",
+      "minimum": 2,
+      "maximum": 10,
+      "default": 2
+    },
+    "extraMinutes": {
+      "description": "Additional minutes beyond the Foundation minutes (charged at $799/min).",
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 60,
+      "default": 0
+    },
+    "teaser": {
+      "type": "boolean",
+      "default": false
+    },
+    "microsite": {
+      "type": "string",
+      "description": "none=not included; standalone=priced at $4,999; bundled=priced effectively at $3,999 when combined with Foundation.",
+      "enum": [
+        "none",
+        "standalone",
+        "bundled"
+      ],
+      "default": "none"
+    },
+    "diyLicense": {
+      "type": "boolean",
+      "default": false
+    },
+    "altLanguageMinutes": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 120,
+      "default": 0,
+      "description": "Number of minutes to clone into alt\u2011languages (post\u2011English final)."
+    },
+    "rush": {
+      "type": "boolean",
+      "default": false
+    },
+    "subscriptionPlan": {
+      "type": "string",
+      "enum": [
+        "none",
+        "essential",
+        "growth",
+        "enterprise"
+      ],
+      "default": "none"
+    },
+    "subscriptionMonths": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 36,
+      "default": 12,
+      "description": "For quoting multi\u2011month commitments (optional)."
+    }
+  },
+  "required": [
+    "foundation",
+    "foundationMinutes",
+    "extraMinutes",
+    "microsite",
+    "subscriptionPlan",
+    "subscriptionMonths"
+  ],
+  "examples": [
+    {
+      "preset": "best",
+      "foundation": true,
+      "foundationMinutes": 2,
+      "extraMinutes": 0,
+      "teaser": true,
+      "microsite": "bundled",
+      "diyLicense": true,
+      "altLanguageMinutes": 2,
+      "rush": false,
+      "subscriptionPlan": "essential",
+      "subscriptionMonths": 12
+    }
+  ],
+  "x-pricing": {
+    "notes": [
+      "Foundation Package: $2,499 (includes up to 2 minutes).",
+      "Extra minutes: $799/min.",
+      "Microsite: $4,999 standalone or $3,999 when bundled with Foundation.",
+      "Teaser: $999. DIY PPT\u2192Video: $1,999 (Human VO +$1,000). Alt\u2011Language: $299/min.",
+      "Rush: +50% surcharge applied to subtotal of video-related items.",
+      "Subscriptions: essential=$999/mo; growth=$2,499/mo; enterprise=$4,999/mo; rollover up to 3 months."
+    ],
+    "currency": "USD"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "preset": "best",
+  "foundation": true,
+  "foundationMinutes": 2,
+  "extraMinutes": 0,
+  "teaser": true,
+  "microsite": "bundled",
+  "diyLicense": true,
+  "altLanguageMinutes": 2,
+  "rush": false,
+  "subscriptionPlan": "essential",
+  "subscriptionMonths": 12
+}
