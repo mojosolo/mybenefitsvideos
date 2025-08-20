@@ -47,8 +47,8 @@ const leadCaptureSchema = z.object({
   timeline: z.string(),
   primaryGoal: z.string(),
   currentChallenges: z.string().optional(),
-  preferredContact: z.enum(['email', 'phone', 'meeting']).default('email'),
-  marketingOptIn: z.boolean().default(false),
+  preferredContact: z.enum(['email', 'phone', 'meeting']),
+  marketingOptIn: z.boolean(),
   gdprConsent: z.boolean().refine((val) => val === true, 'You must accept the terms to continue')
 });
 

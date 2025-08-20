@@ -33,7 +33,7 @@ export const metadata = constructMetadata({
   title: "Custom Microsites - Interactive Benefits Landing Pages",
   description: "Comprehensive benefits hubs featuring your videos plus interactive tools, calculators, and resources. Custom responsive design with SEO optimization. $4,999 standalone, $3,999 bundled.",
   keywords: ["benefits microsite", "benefits portal", "interactive benefits", "benefits hub", "custom landing page", "benefits website"],
-};
+});
 
 // Sample data for Microsites
 const heroData = {

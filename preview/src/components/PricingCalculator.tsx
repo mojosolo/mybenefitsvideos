@@ -30,7 +30,7 @@ import {
 import PackagePresets from '@/components/calculator/PackagePresets';
 import VideoOptions from '@/components/calculator/VideoOptions';
 import SubscriptionPlans from '@/components/calculator/SubscriptionPlans';
-import PricingBreakdown from '@/components/calculator/PricingBreakdown';
+import PricingBreakdownComponent from '@/components/calculator/PricingBreakdown';
 import ROICalculator from '@/components/calculator/ROICalculator';
 import CalculatorSummary from '@/components/calculator/CalculatorSummary';
 
@@ -225,7 +225,7 @@ export default function PricingCalculator({
       case 'subscription':
         return <SubscriptionPlans {...commonProps} />;
       case 'pricing':
-        return pricing ? <PricingBreakdown pricing={pricing} {...commonProps} /> : null;
+        return pricing ? <PricingBreakdownComponent pricing={pricing} {...commonProps} /> : null;
       case 'roi':
         return roiMetrics ? <ROICalculator metrics={roiMetrics} {...commonProps} /> : null;
       case 'summary':
@@ -233,7 +233,6 @@ export default function PricingCalculator({
           <CalculatorSummary 
             pricing={pricing} 
             roiMetrics={roiMetrics}
-            employeeCount={employeeCount}
             onLeadCapture={onLeadCapture}
             {...commonProps} 
           />

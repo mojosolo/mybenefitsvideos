@@ -33,7 +33,7 @@ export const metadata = constructMetadata({
   title: "Teaser Videos - Short-Form Benefits Video Production",
   description: "Drive enrollment and engagement with compelling 1-minute teaser videos. Perfect for open enrollment campaigns, social media, and deadline-driven communications. Starting at $999.",
   keywords: ["teaser videos", "open enrollment videos", "benefits campaigns", "short videos", "enrollment marketing", "benefits teasers"],
-};
+});
 
 // Sample data for Teaser Videos
 const heroData = {

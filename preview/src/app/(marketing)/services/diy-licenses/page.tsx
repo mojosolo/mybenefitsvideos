@@ -33,7 +33,7 @@ export const metadata = constructMetadata({
   title: "DIY PowerPoint Licenses - Transform Presentations to Professional Videos",
   description: "Convert your existing PowerPoint presentations into professional videos with AI or human voiceover. Self-service solution with training and support. $1,999 AI voice, $2,999 human voice.",
   keywords: ["DIY video license", "PowerPoint to video", "presentation conversion", "AI voiceover", "human voiceover", "self-service video"],
-};
+});
 
 // Sample data for DIY Licenses
 const heroData = {

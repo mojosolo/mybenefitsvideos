@@ -61,7 +61,7 @@ export async function generateMetadata({ params }: CaseStudyPageProps): Promise<
       "benefits communication",
       "video production results"
     ],
-  };
+  });
 }
 
 export default async function CaseStudyPage({ params }: CaseStudyPageProps) {

@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
         { 
           success: false, 
           message: 'Invalid data provided',
-          errors: error.errors 
+          errors: error.issues 
         },
         { status: 400 }
       );
