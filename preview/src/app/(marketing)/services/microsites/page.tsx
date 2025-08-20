@@ -7,7 +7,7 @@ import ServiceSpecs from "@/components/sections/service-specs";
 import Footer from "@/components/sections/footer";
 import Header from "@/components/sections/header";
 import CTA from "@/components/sections/cta";
-import type { Metadata } from "next";
+import { constructMetadata } from "@/lib/utils";
 import { 
   Monitor, 
   Clock, 
@@ -29,8 +29,8 @@ import {
   Settings
 } from "lucide-react";
 
-export const metadata: Metadata = {
-  title: "Custom Microsites - Interactive Benefits Landing Pages | Mojo Solo",
+export const metadata = constructMetadata({
+  title: "Custom Microsites - Interactive Benefits Landing Pages",
   description: "Comprehensive benefits hubs featuring your videos plus interactive tools, calculators, and resources. Custom responsive design with SEO optimization. $4,999 standalone, $3,999 bundled.",
   keywords: ["benefits microsite", "benefits portal", "interactive benefits", "benefits hub", "custom landing page", "benefits website"],
 };

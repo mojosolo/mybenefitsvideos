@@ -43,7 +43,7 @@ export default function Footer() {
             <Link href="/" className="cursor-pointer">
               {siteConfig.name}
             </Link>{" "}
-            - {siteConfig.description}
+            - {siteConfig.description}. Produced by Mojo Solo.
           </span>
           <ul className="flex justify-start md:justify-end text-sm tracking-tight text-foreground">
             <li className="mr-3 md:mx-4">

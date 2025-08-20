@@ -7,7 +7,7 @@ import ServiceSpecs from "@/components/sections/service-specs";
 import Footer from "@/components/sections/footer";
 import Header from "@/components/sections/header";
 import CTA from "@/components/sections/cta";
-import type { Metadata } from "next";
+import { constructMetadata } from "@/lib/utils";
 import { 
   FileText, 
   Clock, 
@@ -29,8 +29,8 @@ import {
   CheckCircle
 } from "lucide-react";
 
-export const metadata: Metadata = {
-  title: "DIY PowerPoint Licenses - Transform Presentations to Professional Videos | Mojo Solo",
+export const metadata = constructMetadata({
+  title: "DIY PowerPoint Licenses - Transform Presentations to Professional Videos",
   description: "Convert your existing PowerPoint presentations into professional videos with AI or human voiceover. Self-service solution with training and support. $1,999 AI voice, $2,999 human voice.",
   keywords: ["DIY video license", "PowerPoint to video", "presentation conversion", "AI voiceover", "human voiceover", "self-service video"],
 };

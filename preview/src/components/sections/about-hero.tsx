@@ -26,7 +26,7 @@ export default function AboutHero() {
             <BlurFade delay={BLUR_FADE_DELAY}>
               <div className="inline-flex items-center px-4 py-2 rounded-full bg-oklch(240.325 30% 70%)/10 border border-oklch(240.325 30% 70%)/20">
                 <span className="text-sm font-medium text-oklch(240.325 100% 35%)">
-                  About Mojo Solo
+                  About myBenefitsVideos.com
                 </span>
               </div>
             </BlurFade>

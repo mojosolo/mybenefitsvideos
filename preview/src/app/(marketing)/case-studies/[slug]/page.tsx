@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import type { Metadata } from "next";
+import { constructMetadata } from "@/lib/utils";
 
 interface CaseStudyPageProps {
   params: Promise<{
@@ -44,14 +45,14 @@ export async function generateMetadata({ params }: CaseStudyPageProps): Promise<
   const caseStudy = caseStudies.find(study => study.id === slug);
   
   if (!caseStudy) {
-    return {
-      title: "Case Study Not Found | Mojo Solo",
+    return constructMetadata({
+      title: "Case Study Not Found",
       description: "The case study you're looking for could not be found.",
-    };
+    });
   }
 
-  return {
-    title: `${caseStudy.title} - Case Study | Mojo Solo`,
+  return constructMetadata({
+    title: `${caseStudy.title} - Case Study`,
     description: `${caseStudy.challenge.slice(0, 150)}...`,
     keywords: [
       "benefits video case study",

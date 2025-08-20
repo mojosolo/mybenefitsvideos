@@ -7,7 +7,7 @@ import ServiceSpecs from "@/components/sections/service-specs";
 import Footer from "@/components/sections/footer";
 import Header from "@/components/sections/header";
 import CTA from "@/components/sections/cta";
-import type { Metadata } from "next";
+import { constructMetadata } from "@/lib/utils";
 import { 
   Timer, 
   Clock, 
@@ -29,8 +29,8 @@ import {
   Hash
 } from "lucide-react";
 
-export const metadata: Metadata = {
-  title: "Teaser Videos - Short-Form Benefits Video Production | Mojo Solo",
+export const metadata = constructMetadata({
+  title: "Teaser Videos - Short-Form Benefits Video Production",
   description: "Drive enrollment and engagement with compelling 1-minute teaser videos. Perfect for open enrollment campaigns, social media, and deadline-driven communications. Starting at $999.",
   keywords: ["teaser videos", "open enrollment videos", "benefits campaigns", "short videos", "enrollment marketing", "benefits teasers"],
 };

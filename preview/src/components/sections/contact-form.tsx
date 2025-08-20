@@ -554,7 +554,7 @@ export default function ContactForm() {
             <BlurFade delay={BLUR_FADE_DELAY * 8}>
               <Card className="p-6 bg-white border-0 shadow-sm">
                 <div className="text-sm text-gray-600 mb-3">
-                  "Mojo Solo transformed our boring benefits presentation into an engaging video that our employees actually watch. Enrollment increased 40%!"
+                  "myBenefitsVideos.com transformed our boring benefits presentation into an engaging video that our employees actually watch. Enrollment increased 40%!"
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 bg-oklch(240.325 100% 50%)/10 rounded-full flex items-center justify-center">

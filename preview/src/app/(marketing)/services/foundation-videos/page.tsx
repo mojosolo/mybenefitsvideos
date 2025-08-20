@@ -7,7 +7,7 @@ import ServiceSpecs from "@/components/sections/service-specs";
 import Footer from "@/components/sections/footer";
 import Header from "@/components/sections/header";
 import CTA from "@/components/sections/cta";
-import type { Metadata } from "next";
+import { constructMetadata } from "@/lib/utils";
 import { 
   Play, 
   Clock, 
@@ -26,11 +26,11 @@ import {
   Languages
 } from "lucide-react";
 
-export const metadata: Metadata = {
-  title: "Foundation Videos - Professional Benefits Video Production | Mojo Solo",
+export const metadata = constructMetadata({
+  title: "Foundation Videos - Professional Benefits Video Production",
   description: "Transform your benefits communication with our signature 2-minute foundation videos. Professional scriptwriting, custom animation, and proven 3x engagement increase. Starting at $2,499.",
   keywords: ["foundation videos", "benefits video production", "employee benefits", "video communication", "benefits enrollment", "HR videos"],
-};
+});
 
 // Sample data for Foundation Videos
 const heroData = {
