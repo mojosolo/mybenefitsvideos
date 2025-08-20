@@ -35,6 +35,31 @@ jobs:
         CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         CLOUDFLARE_EMAIL: ${{ secrets.CLOUDFLARE_EMAIL }}
       run: |
+        # Debug: Check if secrets are available
+        if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_EMAIL" ]; then
+          echo "❌ Cloudflare secrets not available at repository level"
+          echo "Checking if we can access organization secrets..."
+          
+          # Try to use Vercel CLI to get secrets if available
+          if command -v vercel >/dev/null 2>&1; then
+            echo "Trying Vercel CLI for environment variables..."
+            vercel env pull .env.temp 2>/dev/null || echo "Vercel not configured"
+            if [ -f .env.temp ]; then
+              export $(cat .env.temp | grep -E '^CLOUDFLARE_' | xargs)
+            fi
+          fi
+          
+          # If still no secrets, provide manual instructions
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_EMAIL" ]; then
+            echo "Manual DNS update required:"
+            echo "1. Get CLOUDFLARE_API_TOKEN and CLOUDFLARE_EMAIL from GitHub org secrets"
+            echo "2. Set them as repository secrets, or"
+            echo "3. Run the DNS update script locally with credentials"
+            exit 1
+          fi
+        fi
+        
+        echo "✅ Cloudflare credentials found"
         python update_dns.py
         
     - name: Verify DNS changes
