@@ -12,6 +12,7 @@ import Problem from "@/components/sections/problem";
 import Solution from "@/components/sections/solution";
 import Testimonials from "@/components/sections/testimonials";
 import TestimonialsCarousel from "@/components/sections/testimonials-carousel";
+import VideoShowcase from "@/components/sections/video-showcase";
 
 export default function Home() {
   return (
@@ -21,6 +22,7 @@ export default function Home() {
       <Logos />
       <Problem />
       <Solution />
+      <VideoShowcase />
       <HowItWorks />
       <TestimonialsCarousel />
       <Features />

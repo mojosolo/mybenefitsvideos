@@ -75,8 +75,8 @@ const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     id: 'essential',
     name: 'Essential',
     subtitle: 'Perfect for smaller teams',
-    monthlyPrice: PRICING_CONFIG.SUBSCRIPTION.essential,
-    minutesIncluded: PRICING_CONFIG.SUBSCRIPTION_MINUTES.essential,
+    monthlyPrice: SERVICE_PRICING.subscription.essential,
+    minutesIncluded: SERVICE_PRICING.subscription_MINUTES.essential,
     description: 'Ideal for organizations with basic ongoing video needs',
     features: [
       '1 minute of video per month',
@@ -97,8 +97,8 @@ const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     id: 'growth',
     name: 'Growth',
     subtitle: 'Most popular for mid-size companies',
-    monthlyPrice: PRICING_CONFIG.SUBSCRIPTION.growth,
-    minutesIncluded: PRICING_CONFIG.SUBSCRIPTION_MINUTES.growth,
+    monthlyPrice: SERVICE_PRICING.subscription.growth,
+    minutesIncluded: SERVICE_PRICING.subscription_MINUTES.growth,
     description: 'Best value for regular video production needs',
     features: [
       '3 minutes of video per month',
@@ -121,8 +121,8 @@ const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     id: 'enterprise',
     name: 'Enterprise',
     subtitle: 'For large organizations',
-    monthlyPrice: PRICING_CONFIG.SUBSCRIPTION.enterprise,
-    minutesIncluded: PRICING_CONFIG.SUBSCRIPTION_MINUTES.enterprise,
+    monthlyPrice: SERVICE_PRICING.subscription.enterprise,
+    minutesIncluded: SERVICE_PRICING.subscription_MINUTES.enterprise,
     description: 'Comprehensive solution for enterprise needs',
     features: [
       '6 minutes of video per month',
@@ -163,7 +163,7 @@ export default function SubscriptionPlans({
   };
 
   const calculateSubscriptionTotal = () => {
-    const monthlyRate = PRICING_CONFIG.SUBSCRIPTION[selections.subscriptionPlan] || 0;
+    const monthlyRate = SERVICE_PRICING.subscription[selections.subscriptionPlan] || 0;
     return monthlyRate * (selections.subscriptionMonths || 0);
   };
 
@@ -399,7 +399,7 @@ export default function SubscriptionPlans({
                     {formatCurrency(calculateSubscriptionTotal())}
                   </p>
                   <p className="text-xs text-gray-500 mt-1">
-                    {formatCurrency(PRICING_CONFIG.SUBSCRIPTION[selections.subscriptionPlan] || 0)}/month × {selections.subscriptionMonths || 0} months
+                    {formatCurrency(SERVICE_PRICING.subscription[selections.subscriptionPlan] || 0)}/month × {selections.subscriptionMonths || 0} months
                   </p>
                 </div>
               </div>

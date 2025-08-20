@@ -17,8 +17,9 @@ import { Progress } from '@/components/ui/progress';
 import { 
   ChevronLeft, 
   ChevronRight, 
-  Calculator, 
-  Zap,
+  Play,
+  Monitor,
+  Plus,
   TrendingUp,
   FileText,
   Send,
@@ -27,14 +28,14 @@ import {
 } from 'lucide-react';
 
 // Import sub-components
-import PackagePresets from '@/components/calculator/PackagePresets';
-import VideoOptions from '@/components/calculator/VideoOptions';
-import SubscriptionPlans from '@/components/calculator/SubscriptionPlans';
+import VideoServiceSelector from '@/components/calculator/VideoServiceSelector';
+import WebsiteServiceSelector from '@/components/calculator/WebsiteServiceSelector';
+import AdditionalServices from '@/components/calculator/AdditionalServices';
 import PricingBreakdownComponent from '@/components/calculator/PricingBreakdown';
 import ROICalculator from '@/components/calculator/ROICalculator';
 import CalculatorSummary from '@/components/calculator/CalculatorSummary';
 
-export type CalculatorStep = 'preset' | 'video' | 'subscription' | 'pricing' | 'roi' | 'summary';
+export type CalculatorStep = 'video' | 'website' | 'additional' | 'pricing' | 'roi' | 'summary';
 
 interface CalculatorStepConfig {
   id: CalculatorStep;
@@ -45,22 +46,22 @@ interface CalculatorStepConfig {
 
 const CALCULATOR_STEPS: CalculatorStepConfig[] = [
   {
-    id: 'preset',
-    title: 'Package Selection',
-    description: 'Choose your starting package',
-    icon: <Calculator className="h-5 w-5" />
-  },
-  {
     id: 'video',
-    title: 'Video Options',
-    description: 'Customize your video requirements',
-    icon: <Zap className="h-5 w-5" />
+    title: 'Video Services',
+    description: 'Choose your video service type and duration',
+    icon: <Play className="h-5 w-5" />
   },
   {
-    id: 'subscription',
-    title: 'Subscription Plans',
-    description: 'Optional ongoing video production',
-    icon: <TrendingUp className="h-5 w-5" />
+    id: 'website',
+    title: 'Website Services',
+    description: 'Optional interactive websites and portals',
+    icon: <Monitor className="h-5 w-5" />
+  },
+  {
+    id: 'additional',
+    title: 'Additional Services',
+    description: 'Languages, DIY licenses, and updates',
+    icon: <Plus className="h-5 w-5" />
   },
   {
     id: 'pricing',
@@ -92,7 +93,7 @@ interface PricingCalculatorProps {
 export default function PricingCalculator({ 
   className = '', 
   onLeadCapture,
-  initialStep = 'preset',
+  initialStep = 'video',
   compactMode = false
 }: PricingCalculatorProps) {
   // State management
@@ -175,22 +176,22 @@ export default function PricingCalculator({
     const newErrors: Record<string, string> = {};
     
     switch (currentStep) {
-      case 'preset':
-        if (!selections.preset) {
-          newErrors.preset = 'Please select a package';
-        }
-        break;
       case 'video':
-        if (selections.foundation && selections.foundationMinutes < 2) {
-          newErrors.foundationMinutes = 'Foundation videos must be at least 2 minutes';
+        if (!selections.videoType) {
+          newErrors.videoType = 'Please select a video service type';
         }
-        if (selections.extraMinutes < 0) {
-          newErrors.extraMinutes = 'Extra minutes cannot be negative';
+        if (selections.videoMinutes < 1) {
+          newErrors.videoMinutes = 'Videos must be at least 1 minute';
         }
         break;
-      case 'subscription':
-        if (selections.subscriptionMonths < 0) {
-          newErrors.subscriptionMonths = 'Subscription months cannot be negative';
+      case 'website':
+        if (!selections.websiteType) {
+          newErrors.websiteType = 'Please select a website service option';
+        }
+        break;
+      case 'additional':
+        if (selections.altLanguageMinutes < 0) {
+          newErrors.altLanguageMinutes = 'Alternative language minutes cannot be negative';
         }
         break;
     }
@@ -218,12 +219,12 @@ export default function PricingCalculator({
     };
 
     switch (currentStep) {
-      case 'preset':
-        return <PackagePresets {...commonProps} />;
       case 'video':
-        return <VideoOptions {...commonProps} />;
-      case 'subscription':
-        return <SubscriptionPlans {...commonProps} />;
+        return <VideoServiceSelector {...commonProps} />;
+      case 'website':
+        return <WebsiteServiceSelector {...commonProps} />;
+      case 'additional':
+        return <AdditionalServices {...commonProps} />;
       case 'pricing':
         return pricing ? <PricingBreakdownComponent pricing={pricing} {...commonProps} /> : null;
       case 'roi':

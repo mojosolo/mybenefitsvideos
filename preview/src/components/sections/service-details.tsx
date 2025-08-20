@@ -20,7 +20,12 @@ import {
   Languages,
   Timer,
   Star,
-  DollarSign
+  DollarSign,
+  Palette,
+  Sparkles,
+  Plus,
+  RefreshCw,
+  Building
 } from "lucide-react";
 
 const services = [
