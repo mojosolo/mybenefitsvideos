@@ -1,13 +1,13 @@
-import ServiceDetails from "@/components/sections/service-details";
+import ServiceDetails from "@/components/sections/service-details";import ServiceDisclaimers from "@/components/sections/service-disclaimers";
 import Footer from "@/components/sections/footer";
 import Header from "@/components/sections/header";
 import CTA from "@/components/sections/cta";
 import { constructMetadata } from "@/lib/utils";
 
 export const metadata = constructMetadata({
-  title: "Benefits Video Production Services - Foundation Videos, Teasers & Microsites",
-  description: "Comprehensive benefits video production services including 2-minute foundation videos, 1-minute teasers, custom microsites, and multi-language support. Transform your employee benefits communication.",
-  keywords: ["benefits video services", "foundation videos", "teaser videos", "microsites", "employee benefits", "video production", "benefits communication"],
+  title: "Benefits Video Production Services - Standard to Full Animation & Websites",
+  description: "Professional benefits video production from $799/min standard to $5,000 full animation, plus interactive websites starting at $4,999. Includes OE teasers, multi-language versions, and DIY PowerPoint conversion.",
+  keywords: ["benefits video services", "video production", "OE teaser videos", "website services", "employee benefits", "benefits communication", "DIY PowerPoint", "multi-language"],
 });
 
 export default function ServicesPage() {
@@ -15,6 +15,7 @@ export default function ServicesPage() {
     <main>
       <Header />
       <ServiceDetails />
+      <ServiceDisclaimers />
       <CTA />
       <Footer />
     </main>
