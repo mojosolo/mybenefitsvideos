@@ -303,7 +303,7 @@ export default function PricingBreakdown({
               <div className="flex justify-between">
                 <span className="text-gray-600">Cost per minute</span>
                 <span className="font-medium">
-                  {formatCurrency(Math.round(pricing.totalDueNow / Math.max(1, (selections.foundationMinutes || 2) + selections.extraMinutes + (selections.teaser ? 1 : 0))))}
+                  {formatCurrency(Math.round(pricing.totalDueNow / Math.max(1, selections.videoMinutes + (selections.oeTeaserVideo ? 1 : 0))))}
                 </span>
               </div>
               {selections.subscriptionPlan !== 'none' && (

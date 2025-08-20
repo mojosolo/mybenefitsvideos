@@ -77,7 +77,7 @@ export default function ROICalculator({
     },
     {
       title: 'Enrollment Rate',
-      value: `${metrics.enrollmentIncrease}%`,
+      value: `${metrics.enrollmentRateIncrease}%`,
       subtitle: 'Higher participation',
       icon: <Users className="h-6 w-6" />,
       color: 'text-blue-600 bg-blue-50 border-blue-200',
@@ -86,7 +86,7 @@ export default function ROICalculator({
     },
     {
       title: 'HR Time Savings',
-      value: `${formatNumber(metrics.hrTimeSaved, ' hrs')}`,
+      value: `${formatNumber(metrics.hrTimeSavingsHours)} hrs`,
       subtitle: 'Hours saved monthly',
       icon: <Clock className="h-6 w-6" />,
       color: 'text-purple-600 bg-purple-50 border-purple-200',
@@ -255,7 +255,7 @@ export default function ROICalculator({
           
           <div className="bg-white p-4 rounded-lg border border-green-200">
             <div className="text-2xl font-bold text-purple-600 mb-1">
-              {formatNumber(Math.round(metrics.hrTimeSaved * 12), ' hrs')}
+              {formatNumber(Math.round(metrics.hrTimeSavingsHours * 12))} hrs
             </div>
             <div className="text-sm text-gray-600">Annual Time Savings</div>
             <div className="text-xs text-gray-500 mt-1">

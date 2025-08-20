@@ -442,12 +442,25 @@ export default function ServiceDetails() {
                       What's Included
                     </h3>
                     <div className="space-y-3 mb-8">
-                      {activeServiceData.features.map((feature, index) => (
-                        <div key={index} className="flex items-start gap-3">
-                          <CheckCircle className="h-5 w-5 text-oklch(240.325 100% 50%) flex-shrink-0 mt-0.5" />
-                          <span className="text-gray-700">{feature}</span>
-                        </div>
-                      ))}
+                      {activeServiceData.features ? (
+                        activeServiceData.features.map((feature, index) => (
+                          <div key={index} className="flex items-start gap-3">
+                            <CheckCircle className="h-5 w-5 text-oklch(240.325 100% 50%) flex-shrink-0 mt-0.5" />
+                            <span className="text-gray-700">{feature}</span>
+                          </div>
+                        ))
+                      ) : activeServiceData.services ? (
+                        activeServiceData.services.map((service, index) => (
+                          <div key={index} className="mb-6 p-4 bg-gray-50 rounded-lg">
+                            <h4 className="font-semibold text-gray-900 mb-2">{service.name}</h4>
+                            <p className="text-sm text-gray-600 mb-2">{service.description}</p>
+                            <div className="flex justify-between text-sm">
+                              <span className="font-medium text-oklch(240.325 100% 50%)">{service.price}</span>
+                              <span className="text-gray-500">{service.timeline}</span>
+                            </div>
+                          </div>
+                        ))
+                      ) : null}
                     </div>
 
                     {/* Benefits */}

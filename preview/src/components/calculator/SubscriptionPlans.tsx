@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { 
   type PricingSelections,
   formatCurrency, 
-  PRICING_CONFIG 
+  SERVICE_PRICING 
 } from '@/lib/pricing';
 import { 
   TrendingUp,

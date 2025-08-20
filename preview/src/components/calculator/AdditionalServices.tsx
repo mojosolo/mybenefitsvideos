@@ -138,8 +138,8 @@ export default function AdditionalServices({
                   min={0}
                   max={10}
                   step={1}
-                  value={[selections.altLanguageMinutes]}
-                  onValueChange={([value]) => updateAltLanguageMinutes(value)}
+                  value={selections.altLanguageMinutes}
+                  onValueChange={(value) => updateAltLanguageMinutes(value)}
                   className="w-full"
                 />
 

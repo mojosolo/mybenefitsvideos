@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { 
   type PricingSelections,
   formatCurrency, 
-  PRICING_CONFIG 
+  SERVICE_PRICING 
 } from '@/lib/pricing';
 import { 
   Video,

@@ -247,8 +247,8 @@ export default function VideoServiceSelector({
                   min={1}
                   max={10}
                   step={1}
-                  value={[selections.videoMinutes]}
-                  onValueChange={([value]) => updateVideoMinutes(value)}
+                  value={selections.videoMinutes}
+                  onValueChange={(value) => updateVideoMinutes(value)}
                   className="w-full"
                 />
 

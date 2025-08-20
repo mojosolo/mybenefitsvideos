@@ -9,7 +9,7 @@ import {
   type PricingSelections,
   formatCurrency, 
   computePricing,
-  PRICING_CONFIG 
+  SERVICE_PRICING 
 } from '@/lib/pricing';
 import { 
   Check, 
@@ -48,11 +48,11 @@ const PACKAGE_OPTIONS: PackageOption[] = [
   {
     id: 'good',
     name: 'GOOD',
-    subtitle: 'Essential Foundation',
-    price: formatCurrency(PRICING_CONFIG.FOUNDATION_PRICE),
+    subtitle: 'Standard Video Only',
+    price: formatCurrency(SERVICE_PRICING.video.standard * 2),
     description: 'Perfect for organizations getting started with benefits videos',
     features: [
-      'Foundation video (2 minutes)',
+      'Standard video (2 minutes)',
       'Professional scriptwriting',
       'Custom graphics & animation',
       '2 rounds of revisions',
@@ -66,10 +66,10 @@ const PACKAGE_OPTIONS: PackageOption[] = [
   {
     id: 'better',
     name: 'BETTER',
-    subtitle: 'Foundation + Microsite',
-    price: formatCurrency(PRICING_CONFIG.FOUNDATION_PRICE + PRICING_CONFIG.MICROSITE_BUNDLED),
-    originalPrice: formatCurrency(PRICING_CONFIG.FOUNDATION_PRICE + PRICING_CONFIG.MICROSITE_STANDALONE),
-    savings: formatCurrency(PRICING_CONFIG.MICROSITE_STANDALONE - PRICING_CONFIG.MICROSITE_BUNDLED),
+    subtitle: 'Video + Website',
+    price: formatCurrency(SERVICE_PRICING.video.standard * 2 + SERVICE_PRICING.website['benefits-break'].initial),
+    originalPrice: formatCurrency(SERVICE_PRICING.video.standard * 2 + SERVICE_PRICING.website['benefits-break'].initial),
+    savings: formatCurrency(0),
     description: 'Ideal for comprehensive benefits communication campaigns',
     features: [
       'Everything in GOOD',
@@ -113,11 +113,35 @@ export default function PackagePresets({
 }: PackagePresetsProps) {
   
   const handlePackageSelect = (packageId: 'good' | 'better' | 'best') => {
-    onSelectionsChange({ preset: packageId });
+    if (packageId === 'good') {
+      onSelectionsChange({
+        videoType: 'standard',
+        videoMinutes: 2,
+        websiteType: 'none',
+        oeTeaserVideo: false,
+        altLanguageMinutes: 0,
+        diyPowerpoint: false,
+        rush: false
+      });
+    } else if (packageId === 'better') {
+      onSelectionsChange({
+        videoType: 'standard',
+        videoMinutes: 2,
+        websiteType: 'benefits-break',
+        oeTeaserVideo: false,
+        altLanguageMinutes: 0,
+        diyPowerpoint: false,
+        rush: false
+      });
+    }
+    // Note: 'best' package not implemented in this simplified version
   };
 
   const renderPackageCard = (packageOption: PackageOption, index: number) => {
-    const isSelected = selections.preset === packageOption.id;
+    const isSelected = (
+      (packageOption.id === 'good' && selections.videoType === 'standard' && selections.videoMinutes === 2 && selections.websiteType === 'none') ||
+      (packageOption.id === 'better' && selections.videoType === 'standard' && selections.videoMinutes === 2 && selections.websiteType === 'benefits-break')
+    );
     
     return (
       <motion.div
@@ -260,14 +284,7 @@ export default function PackagePresets({
       </div>
 
       {/* Error Display */}
-      {errors.preset && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <div className="flex items-center gap-2 text-red-800">
-            <Zap className="h-5 w-5" />
-            <p>{errors.preset}</p>
-          </div>
-        </div>
-      )}
+      {/* Error handling removed since preset field no longer exists */}
 
       {/* Package Grid */}
       <div className="grid lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
@@ -287,15 +304,13 @@ export default function PackagePresets({
             </p>
             <Button
               variant="outline"
-              onClick={() => onSelectionsChange({ preset: 'custom' })}
+              onClick={() => {/* Custom logic can be added here */}}
               className={`
-                ${selections.preset === 'custom' 
-                  ? 'bg-oklch(240.325_100%_50%) text-white border-oklch(240.325_100%_50%)' 
-                  : 'border-oklch(240.325_100%_50%) text-oklch(240.325_100%_50%) hover:bg-oklch(240.325_100%_50%)/10'
+                border-oklch(240.325_100%_50%) text-oklch(240.325_100%_50%) hover:bg-oklch(240.325_100%_50%)/10
                 }
               `}
             >
-              {selections.preset === 'custom' ? 'Custom Selected' : 'Build Custom Package'}
+              Build Custom Package
             </Button>
           </div>
         </Card>
