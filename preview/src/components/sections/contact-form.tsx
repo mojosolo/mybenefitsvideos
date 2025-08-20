@@ -1,11 +1,28 @@
 "use client";
 
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import BlurFade from "@/components/magicui/blur-fade";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import FormField from "@/components/ui/form-field";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select } from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
+import { Checkbox } from "@/components/ui/checkbox";
+import { FileUpload } from "@/components/ui/file-upload";
 import { BLUR_FADE_DELAY } from "@/lib/config";
+import { 
+  contactFormSchema,
+  type ContactFormData,
+  defaultFormValues,
+  projectTypeOptions,
+  timelineOptions,
+  employeeCountOptions,
+  budgetPresets
+} from "@/lib/contact-validation";
 import { 
   MapPin, 
   Phone, 
@@ -15,54 +32,11 @@ import {
   CheckCircle,
   MessageSquare,
   Calendar,
-  Zap
+  Zap,
+  Upload,
+  Shield,
+  AlertCircle
 } from "lucide-react";
-
-interface FormData {
-  name: string;
-  email: string;
-  company: string;
-  phone: string;
-  projectType: string;
-  budget: string;
-  timeline: string;
-  employeeCount: string;
-  message: string;
-  contactPreference: string;
-}
-
-const projectTypes = [
-  "Foundation Video (2 minutes)",
-  "Teaser Video (1 minute)", 
-  "Microsite + Video Bundle",
-  "Complete Package (Best)",
-  "DIY PowerPoint License",
-  "Multi-language Version",
-  "Not sure - need guidance"
-];
-
-const budgetRanges = [
-  "Under $5,000",
-  "$5,000 - $10,000", 
-  "$10,000 - $25,000",
-  "$25,000+",
-  "Need custom quote"
-];
-
-const timelines = [
-  "ASAP (Rush - 2 weeks)",
-  "Standard (3-4 weeks)",
-  "Flexible (5+ weeks)",
-  "Planning for next year"
-];
-
-const employeeCounts = [
-  "Under 100",
-  "100-500",
-  "500-1,000",
-  "1,000-5,000",
-  "5,000+"
-];
 
 const contactInfo = [
   {
@@ -92,35 +66,52 @@ const contactInfo = [
 ];
 
 export default function ContactForm() {
-  const [formData, setFormData] = useState<FormData>({
-    name: "",
-    email: "",
-    company: "",
-    phone: "",
-    projectType: "",
-    budget: "",
-    timeline: "",
-    employeeCount: "",
-    message: "",
-    contactPreference: "email"
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { errors, isSubmitting }
+  } = useForm<ContactFormData>({
+    resolver: zodResolver(contactFormSchema),
+    defaultValues: defaultFormValues,
+    mode: 'onChange'
   });
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const watchedMessage = watch('message', '');
+  const watchedBudget = watch('budget', 10000);
+  const watchedContactPreference = watch('contactPreference', 'email');
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubmitting(false);
+  const onSubmit = async (data: ContactFormData) => {
+    try {
+      setSubmitError(null);
+      
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to send message');
+      }
+
       setIsSubmitted(true);
-    }, 2000);
+    } catch (error) {
+      console.error('Form submission error:', error);
+      setSubmitError(error instanceof Error ? error.message : 'An unexpected error occurred');
+    }
   };
 
-  const handleInputChange = (field: keyof FormData, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+  const formatBudget = (value: number) => {
+    if (value >= 100000) return '$100K+';
+    return `$${(value / 1000).toFixed(0)}K`;
   };
 
   if (isSubmitted) {
@@ -187,43 +178,70 @@ export default function ContactForm() {
           <div className="lg:col-span-2">
             <BlurFade delay={BLUR_FADE_DELAY * 4}>
               <Card className="p-8 bg-white border-0 shadow-sm">
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                  {/* Submit Error */}
+                  {submitError && (
+                    <div className="flex items-center gap-2 p-4 bg-red-50 border border-red-200 rounded-md">
+                      <AlertCircle className="h-4 w-4 text-red-500" />
+                      <p className="text-sm text-red-700">{submitError}</p>
+                    </div>
+                  )}
+
                   {/* Basic Info */}
                   <div className="grid md:grid-cols-2 gap-6">
-                    <FormField
-                      label="Full Name"
-                      type="text"
-                      placeholder="Your full name"
-                      value={formData.name}
-                      onChange={(value) => handleInputChange("name", value)}
-                      required
-                    />
-                    <FormField
-                      label="Email Address"
-                      type="email"
-                      placeholder="you@company.com"
-                      value={formData.email}
-                      onChange={(value) => handleInputChange("email", value)}
-                      required
-                    />
+                    <div className="space-y-2">
+                      <Label htmlFor="name">Full Name *</Label>
+                      <Input
+                        id="name"
+                        placeholder="Your full name"
+                        {...register('name')}
+                        className={errors.name ? 'border-red-500' : ''}
+                      />
+                      {errors.name && (
+                        <p className="text-sm text-red-600">{errors.name.message}</p>
+                      )}
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="email">Email Address *</Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        placeholder="you@company.com"
+                        {...register('email')}
+                        className={errors.email ? 'border-red-500' : ''}
+                      />
+                      {errors.email && (
+                        <p className="text-sm text-red-600">{errors.email.message}</p>
+                      )}
+                    </div>
                   </div>
 
                   <div className="grid md:grid-cols-2 gap-6">
-                    <FormField
-                      label="Company Name"
-                      type="text"
-                      placeholder="Your company"
-                      value={formData.company}
-                      onChange={(value) => handleInputChange("company", value)}
-                      required
-                    />
-                    <FormField
-                      label="Phone Number"
-                      type="tel"
-                      placeholder="(555) 123-4567"
-                      value={formData.phone}
-                      onChange={(value) => handleInputChange("phone", value)}
-                    />
+                    <div className="space-y-2">
+                      <Label htmlFor="company">Company Name *</Label>
+                      <Input
+                        id="company"
+                        placeholder="Your company"
+                        {...register('company')}
+                        className={errors.company ? 'border-red-500' : ''}
+                      />
+                      {errors.company && (
+                        <p className="text-sm text-red-600">{errors.company.message}</p>
+                      )}
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="phone">Phone Number</Label>
+                      <Input
+                        id="phone"
+                        type="tel"
+                        placeholder="(555) 123-4567"
+                        {...register('phone')}
+                        className={errors.phone ? 'border-red-500' : ''}
+                      />
+                      {errors.phone && (
+                        <p className="text-sm text-red-600">{errors.phone.message}</p>
+                      )}
+                    </div>
                   </div>
 
                   {/* Project Details */}
@@ -233,62 +251,94 @@ export default function ContactForm() {
                     </h3>
                     
                     <div className="grid md:grid-cols-2 gap-6">
-                      <FormField
-                        label="What type of project interests you?"
-                        type="select"
-                        value={formData.projectType}
-                        onChange={(value) => handleInputChange("projectType", value)}
-                        options={projectTypes}
-                        placeholder="Select project type"
-                        required
-                      />
-                      <FormField
-                        label="Budget Range"
-                        type="select"
-                        value={formData.budget}
-                        onChange={(value) => handleInputChange("budget", value)}
-                        options={budgetRanges}
-                        placeholder="Select budget range"
-                        required
-                      />
+                      <div className="space-y-2">
+                        <Label htmlFor="projectType">What type of project interests you? *</Label>
+                        <Select
+                          {...register('projectType')}
+                          options={projectTypeOptions}
+                          placeholder="Select project type"
+                          error={errors.projectType?.message as string}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="timeline">Timeline *</Label>
+                        <Select
+                          {...register('timeline')}
+                          options={timelineOptions}
+                          placeholder="When do you need this?"
+                          error={errors.timeline?.message as string}
+                        />
+                      </div>
                     </div>
 
-                    <div className="grid md:grid-cols-2 gap-6">
-                      <FormField
-                        label="Timeline"
-                        type="select"
-                        value={formData.timeline}
-                        onChange={(value) => handleInputChange("timeline", value)}
-                        options={timelines}
-                        placeholder="When do you need this?"
-                        required
-                      />
-                      <FormField
-                        label="Number of Employees"
-                        type="select"
-                        value={formData.employeeCount}
-                        onChange={(value) => handleInputChange("employeeCount", value)}
-                        options={employeeCounts}
+                    {/* Budget Slider */}
+                    <div className="space-y-4">
+                      <Label>Budget Range *</Label>
+                      <div className="px-2">
+                        <Slider
+                          value={watchedBudget}
+                          onValueChange={(value) => setValue('budget', value, { shouldValidate: true })}
+                          min={1000}
+                          max={100000}
+                          step={1000}
+                          formatValue={formatBudget}
+                          marks={budgetPresets}
+                          className="mb-4"
+                        />
+                        {errors.budget && (
+                          <p className="text-sm text-red-600 mt-2">{errors.budget.message}</p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="employeeCount">Number of Employees</Label>
+                      <Select
+                        {...register('employeeCount')}
+                        options={employeeCountOptions}
                         placeholder="Select employee count"
+                        error={errors.employeeCount?.message as string}
                       />
                     </div>
                   </div>
 
                   {/* Message */}
-                  <FormField
-                    label="Tell us about your project"
-                    type="textarea"
-                    placeholder="Describe your benefits communication challenges, goals, or any specific requirements..."
-                    value={formData.message}
-                    onChange={(value) => handleInputChange("message", value)}
-                    rows={4}
-                  />
+                  <div className="space-y-2">
+                    <Label htmlFor="message">Tell us about your project *</Label>
+                    <Textarea
+                      id="message"
+                      placeholder="Describe your benefits communication challenges, goals, or any specific requirements..."
+                      {...register('message')}
+                      rows={4}
+                      maxLength={2000}
+                      showCharCount
+                      className={errors.message ? 'border-red-500' : ''}
+                    />
+                    {errors.message && (
+                      <p className="text-sm text-red-600">{errors.message.message}</p>
+                    )}
+                  </div>
+
+                  {/* File Upload */}
+                  <div className="space-y-2">
+                    <Label>Project Materials (Optional)</Label>
+                    <FileUpload
+                      onFilesChange={(files) => setValue('projectFiles', files)}
+                      maxFiles={3}
+                      maxSize={10}
+                      acceptedTypes={['.pdf', '.doc', '.docx', '.png', '.jpg', '.jpeg', '.ppt', '.pptx']}
+                      error={errors.projectFiles?.message as string}
+                    />
+                    <p className="text-xs text-gray-500">
+                      Upload any existing materials, presentations, or documents related to your project.
+                    </p>
+                  </div>
 
                   {/* Contact Preference */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-900 mb-3">
+                    <Label className="block text-sm font-medium text-gray-900 mb-3">
                       How would you prefer to be contacted?
-                    </label>
+                    </Label>
                     <div className="flex gap-4">
                       {[
                         { value: "email", label: "Email", icon: <Mail className="h-4 w-4" /> },
@@ -298,9 +348,9 @@ export default function ContactForm() {
                         <button
                           key={option.value}
                           type="button"
-                          onClick={() => handleInputChange("contactPreference", option.value)}
+                          onClick={() => setValue('contactPreference', option.value as 'email' | 'phone' | 'meeting')}
                           className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors ${
-                            formData.contactPreference === option.value
+                            watchedContactPreference === option.value
                               ? "bg-oklch(240.325 100% 50%) text-white border-oklch(240.325 100% 50%)"
                               : "bg-white text-gray-700 border-gray-200 hover:border-oklch(240.325 100% 50%)"
                           }`}
@@ -309,6 +359,46 @@ export default function ContactForm() {
                           {option.label}
                         </button>
                       ))}
+                    </div>
+                  </div>
+
+                  {/* Compliance and Opt-ins */}
+                  <div className="pt-4 space-y-4 border-t border-gray-100">
+                    <div className="space-y-3">
+                      <Checkbox
+                        {...register('gdprConsent')}
+                        id="gdprConsent"
+                        error={errors.gdprConsent?.message as string}
+                      >
+                        <span className="text-sm">
+                          I agree to the{' '}
+                          <a href="/privacy" className="text-oklch(240.325 100% 50%) hover:underline" target="_blank">
+                            Privacy Policy
+                          </a>
+                          {' '}and{' '}
+                          <a href="/terms" className="text-oklch(240.325 100% 50%) hover:underline" target="_blank">
+                            Terms of Service
+                          </a>
+                          {' '}*
+                        </span>
+                      </Checkbox>
+
+                      <Checkbox
+                        {...register('newsletterOptIn')}
+                        id="newsletterOptIn"
+                        label="Subscribe to our newsletter for benefits communication tips and updates"
+                      />
+
+                      <Checkbox
+                        {...register('marketingOptIn')}
+                        id="marketingOptIn"
+                        label="I'd like to receive occasional marketing emails about relevant services and offers"
+                      />
+                    </div>
+                    
+                    <div className="flex items-center gap-2 text-xs text-gray-500">
+                      <Shield className="h-3 w-3" />
+                      Your information is secure and will never be shared with third parties.
                     </div>
                   </div>
 
@@ -332,6 +422,10 @@ export default function ContactForm() {
                         </div>
                       )}
                     </Button>
+                    
+                    <p className="text-xs text-gray-500 text-center mt-3">
+                      We'll get back to you within 24 hours. For urgent inquiries, call us directly.
+                    </p>
                   </div>
                 </form>
               </Card>
@@ -370,6 +464,24 @@ export default function ContactForm() {
                     </div>
                   ))}
                 </div>
+                
+                {/* Meeting Scheduler */}
+                <div className="mt-6 pt-6 border-t border-gray-100">
+                  <h4 className="text-md font-medium text-gray-900 mb-3">
+                    Schedule a Meeting
+                  </h4>
+                  <Button 
+                    variant="outline"
+                    className="w-full justify-start border-oklch(240.325 100% 50%) text-oklch(240.325 100% 50%) hover:bg-oklch(240.325 100% 50%)/5"
+                    onClick={() => window.open('https://calendly.com/mojosolo', '_blank')}
+                  >
+                    <Calendar className="h-4 w-4 mr-2" />
+                    Book 15-min Discovery Call
+                  </Button>
+                  <p className="text-xs text-gray-500 mt-2">
+                    Perfect for discussing your project needs and getting a quick quote.
+                  </p>
+                </div>
               </Card>
             </BlurFade>
 
@@ -383,30 +495,63 @@ export default function ContactForm() {
                   <Button 
                     variant="outline" 
                     className="w-full justify-start border-oklch(240.325 100% 50%) text-oklch(240.325 100% 50%) hover:bg-oklch(240.325 100% 50%)/5"
+                    onClick={() => window.open('mailto:hello@mojosolo.com?subject=Urgent Inquiry', '_blank')}
                   >
                     <MessageSquare className="h-4 w-4 mr-2" />
-                    Live Chat Support
+                    Send Urgent Email
                   </Button>
                   <Button 
                     variant="outline"
                     className="w-full justify-start border-oklch(240.325 100% 50%) text-oklch(240.325 100% 50%) hover:bg-oklch(240.325 100% 50%)/5"
+                    onClick={() => window.open('tel:+15551234567', '_blank')}
                   >
-                    <Calendar className="h-4 w-4 mr-2" />
-                    Schedule a Call
+                    <Phone className="h-4 w-4 mr-2" />
+                    Call for Rush Projects
                   </Button>
                   <Button 
                     variant="outline"
                     className="w-full justify-start border-oklch(240.325 100% 50%) text-oklch(240.325 100% 50%) hover:bg-oklch(240.325 100% 50%)/5"
+                    onClick={() => window.open('/pricing', '_self')}
                   >
                     <Zap className="h-4 w-4 mr-2" />
-                    Rush Project Quote
+                    Get Instant Pricing
                   </Button>
+                </div>
+                
+                <div className="mt-4 pt-4 border-t border-oklch(240.325 100% 50%)/20">
+                  <p className="text-xs text-gray-600">
+                    <strong>Rush projects:</strong> Available with 50% surcharge for 2-week delivery. 
+                    Call us to discuss your urgent timeline.
+                  </p>
+                </div>
+              </Card>
+            </BlurFade>
+
+            {/* FAQ Preview */}
+            <BlurFade delay={BLUR_FADE_DELAY * 7}>
+              <Card className="p-6 bg-white border-0 shadow-sm">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                  Quick Answers
+                </h3>
+                <div className="space-y-3 text-sm">
+                  <div>
+                    <p className="font-medium text-gray-900 mb-1">How long does it take?</p>
+                    <p className="text-gray-600">Standard projects: 3-4 weeks. Rush available.</p>
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900 mb-1">What's included?</p>
+                    <p className="text-gray-600">Script, voiceover, animations, 2 revision rounds.</p>
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900 mb-1">Starting price?</p>
+                    <p className="text-gray-600">Foundation videos start at $2,499 (2 minutes).</p>
+                  </div>
                 </div>
               </Card>
             </BlurFade>
 
             {/* Testimonial */}
-            <BlurFade delay={BLUR_FADE_DELAY * 7}>
+            <BlurFade delay={BLUR_FADE_DELAY * 8}>
               <Card className="p-6 bg-white border-0 shadow-sm">
                 <div className="text-sm text-gray-600 mb-3">
                   "Mojo Solo transformed our boring benefits presentation into an engaging video that our employees actually watch. Enrollment increased 40%!"
