@@ -11,6 +11,7 @@ on:
 jobs:
   update-dns:
     runs-on: ubuntu-latest
+    environment: production
     steps:
       - name: Update DNS Records
         run: |
@@ -23,10 +24,19 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
             -H "Content-Type: application/json")
           
+          echo "🔍 Zone API Response:"
+          echo "$ZONE_RESPONSE" | jq '.'
+          
           ZONE_ID=$(echo "$ZONE_RESPONSE" | jq -r '.result[0].id // empty')
           
           if [ -z "$ZONE_ID" ]; then
             echo "❌ Could not find zone for mybenefitsvideos.com"
+            echo "🔍 Trying to list all available zones..."
+            ALL_ZONES=$(curl -s -X GET "https://api.cloudflare.com/client/v4/zones" \
+              -H "X-Auth-Email: ${{ secrets.CLOUDFLARE_EMAIL }}" \
+              -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+              -H "Content-Type: application/json")
+            echo "$ALL_ZONES" | jq -r '.result[] | "  • \(.name) (ID: \(.id[0:8])...)"'
             exit 1
           fi
           
