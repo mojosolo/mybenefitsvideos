@@ -1,6 +1,14 @@
 {
-  "buildCommand": "cd preview && npm run build",
-  "outputDirectory": "preview/.next",
-  "framework": "nextjs",
-  "installCommand": "cd preview && npm install"
+  "builds": [
+    {
+      "src": "preview/package.json",
+      "use": "@vercel/next"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "preview/$1"
+    }
+  ]
 }

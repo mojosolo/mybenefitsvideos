@@ -69,3 +69,4 @@ share/python-wheels/
 
 # DOCX output files
 *_filled.docx
+.vercel
