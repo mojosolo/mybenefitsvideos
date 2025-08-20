@@ -14,30 +14,7 @@ import {
   ArrowUpRight
 } from "lucide-react";
 import Image from "next/image";
-
-interface CaseStudy {
-  id: string;
-  title: string;
-  client: string;
-  industry: string;
-  challenge: string;
-  solution: string;
-  results: {
-    engagement: string;
-    enrollment: string;
-    satisfaction: string;
-    additional?: string;
-  };
-  services: string[];
-  timeline: string;
-  employeeCount: string;
-  quote: string;
-  quotePerson: string;
-  quoteTitle: string;
-  videoThumbnail: string;
-  tags: string[];
-  featured: boolean;
-}
+import { CaseStudy } from "@/lib/case-studies";
 
 interface CaseStudyCardProps {
   caseStudy: CaseStudy;
@@ -197,17 +174,24 @@ export default function CaseStudyCard({ caseStudy }: CaseStudyCardProps) {
               
               <div className="p-4 bg-purple-50 rounded-lg border border-purple-100">
                 <div className="text-2xl font-bold text-purple-600 mb-1">
+                  {caseStudy.results.roi}
+                </div>
+                <div className="text-sm text-purple-700">ROI Achievement</div>
+              </div>
+              
+              <div className="p-4 bg-orange-50 rounded-lg border border-orange-100">
+                <div className="text-2xl font-bold text-orange-600 mb-1">
                   {caseStudy.results.satisfaction}
                 </div>
-                <div className="text-sm text-purple-700">Employee Rating</div>
+                <div className="text-sm text-orange-700">Employee Rating</div>
               </div>
               
               {caseStudy.results.additional && (
-                <div className="p-4 bg-orange-50 rounded-lg border border-orange-100">
-                  <div className="text-sm font-semibold text-orange-600 mb-1">
+                <div className="col-span-2 p-4 bg-gray-50 rounded-lg border border-gray-100">
+                  <div className="text-sm font-semibold text-gray-600 mb-1">
                     Additional Impact
                   </div>
-                  <div className="text-sm text-orange-700">
+                  <div className="text-sm text-gray-700">
                     {caseStudy.results.additional}
                   </div>
                 </div>
@@ -235,10 +219,13 @@ export default function CaseStudyCard({ caseStudy }: CaseStudyCardProps) {
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-3">
             <Button 
+              asChild
               className="flex-1 bg-oklch(240.325 100% 50%) hover:bg-oklch(240.325 100% 45%) text-white"
             >
-              View Full Case Study
-              <ArrowUpRight className="ml-2 h-4 w-4" />
+              <a href={`/case-studies/${caseStudy.id}`}>
+                View Full Case Study
+                <ArrowUpRight className="ml-2 h-4 w-4" />
+              </a>
             </Button>
             <Button 
               variant="outline"
