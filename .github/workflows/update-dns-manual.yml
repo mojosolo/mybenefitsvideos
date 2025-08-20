@@ -6,7 +6,7 @@ on:
       target_ip:
         description: 'Target IP address for DNS records'
         required: true
-        default: '76.76.21.21'
+        default: '64.29.17.67'
 
 jobs:
   update-dns:

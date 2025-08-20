@@ -31,7 +31,7 @@ def get_zone_id(domain, email, api_token):
     url = "https://api.cloudflare.com/client/v4/zones"
     headers = {
         "X-Auth-Email": email,
-        "X-Auth-Key": api_token,
+        "Authorization": f"Bearer {api_token}",
         "Content-Type": "application/json"
     }
     
@@ -54,7 +54,7 @@ def list_dns_records(zone_id, email, api_token):
     url = f"https://api.cloudflare.com/client/v4/zones/{zone_id}/dns_records"
     headers = {
         "X-Auth-Email": email,
-        "X-Auth-Key": api_token,
+        "Authorization": f"Bearer {api_token}",
         "Content-Type": "application/json"
     }
     
@@ -76,7 +76,7 @@ def update_dns_record(zone_id, record_id, record_data, email, api_token):
     url = f"https://api.cloudflare.com/client/v4/zones/{zone_id}/dns_records/{record_id}"
     headers = {
         "X-Auth-Email": email,
-        "X-Auth-Key": api_token,
+        "Authorization": f"Bearer {api_token}",
         "Content-Type": "application/json"
     }
     
@@ -107,9 +107,10 @@ def main():
         return 1
     
     domain = "mybenefitsvideos.com"
-    new_ip = "76.76.21.21"
+    # Vercel IP addresses for mybenefitsvideos.vercel.app
+    new_ips = ["64.29.17.67", "216.198.79.67"]
     
-    print(f"Updating DNS records for {domain} to point to {new_ip}")
+    print(f"Updating DNS records for {domain} to point to Vercel IPs: {', '.join(new_ips)}")
     
     # Get zone ID
     zone_id = get_zone_id(domain, email, api_token)
@@ -120,22 +121,28 @@ def main():
     
     # List current DNS records
     records = list_dns_records(zone_id, email, api_token)
-    a_records = [r for r in records if r["type"] == "A" and r["name"] == domain]
+    a_records = [r for r in records if r["type"] == "A" and (r["name"] == domain or r["name"] == f"www.{domain}")]
     
     print(f"Found {len(a_records)} A records for {domain}:")
     for record in a_records:
         print(f"  {record['name']} -> {record['content']} (ID: {record['id']})")
     
-    # Update each A record
+    # Update A records to point to Vercel IPs
+    # We'll update records to use both IPs, or pick one per record
     success_count = 0
-    for record in a_records:
-        if record["content"] != new_ip:
-            print(f"Updating {record['name']} from {record['content']} to {new_ip}")
+    target_ips = new_ips.copy()
+    
+    for i, record in enumerate(a_records):
+        # Use round-robin assignment of IPs to records
+        target_ip = target_ips[i % len(target_ips)]
+        
+        if record["content"] not in new_ips:
+            print(f"Updating {record['name']} from {record['content']} to {target_ip}")
             
             record_data = {
                 "type": "A",
                 "name": record["name"],
-                "content": new_ip,
+                "content": target_ip,
                 "ttl": record.get("ttl", 1)  # Use existing TTL or default to auto
             }
             
@@ -145,7 +152,7 @@ def main():
             else:
                 print(f"  ❌ Failed to update {record['name']}")
         else:
-            print(f"Record {record['name']} already points to {new_ip}")
+            print(f"Record {record['name']} already points to Vercel IP {record['content']}")
             success_count += 1
     
     print(f"\nCompleted: {success_count}/{len(a_records)} records updated successfully")

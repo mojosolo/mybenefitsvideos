@@ -1,0 +1,36 @@
+name: Test Cloudflare Authentication
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-auth:
+    runs-on: ubuntu-latest
+    environment: production
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests
+        
+    - name: Test Cloudflare Authentication
+      env:
+        CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        CLOUDFLARE_EMAIL: ${{ secrets.CLOUDFLARE_EMAIL }}
+      run: |
+        echo "🔐 Testing Cloudflare API authentication..."
+        echo "Email: $CLOUDFLARE_EMAIL"
+        echo "Token length: ${#CLOUDFLARE_API_TOKEN}"
+        echo "Token first 8 chars: ${CLOUDFLARE_API_TOKEN:0:8}..."
+        echo "Token last 4 chars: ...${CLOUDFLARE_API_TOKEN: -4}"
+        
+        python test_cloudflare_auth.py
