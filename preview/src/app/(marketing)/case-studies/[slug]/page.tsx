@@ -28,9 +28,9 @@ import Image from "next/image";
 import type { Metadata } from "next";
 
 interface CaseStudyPageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 export async function generateStaticParams() {
@@ -40,7 +40,8 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: CaseStudyPageProps): Promise<Metadata> {
-  const caseStudy = caseStudies.find(study => study.id === params.slug);
+  const { slug } = await params;
+  const caseStudy = caseStudies.find(study => study.id === slug);
   
   if (!caseStudy) {
     return {
@@ -62,8 +63,9 @@ export async function generateMetadata({ params }: CaseStudyPageProps): Promise<
   };
 }
 
-export default function CaseStudyPage({ params }: CaseStudyPageProps) {
-  const caseStudy = caseStudies.find(study => study.id === params.slug);
+export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
+  const { slug } = await params;
+  const caseStudy = caseStudies.find(study => study.id === slug);
   
   if (!caseStudy) {
     notFound();

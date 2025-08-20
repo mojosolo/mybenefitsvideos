@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import BlurFade from "@/components/magicui/blur-fade";
 import { Card } from "@/components/ui/card";
@@ -22,7 +22,7 @@ import {
 
 type ViewMode = 'grid' | 'list' | 'compact';
 
-export default function CaseStudyFilter() {
+function CaseStudyFilterContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   
@@ -310,5 +310,25 @@ export default function CaseStudyFilter() {
         </BlurFade>
       </div>
     </section>
+  );
+}
+
+export default function CaseStudyFilter() {
+  return (
+    <Suspense fallback={
+      <div className="py-24 lg:py-32">
+        <div className="container mx-auto px-4">
+          <div className="text-center">
+            <div className="animate-pulse">
+              <div className="h-8 bg-gray-200 rounded-full max-w-sm mx-auto mb-4"></div>
+              <div className="h-12 bg-gray-200 rounded max-w-lg mx-auto mb-8"></div>
+              <div className="h-4 bg-gray-200 rounded max-w-md mx-auto"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }>
+      <CaseStudyFilterContent />
+    </Suspense>
   );
 }

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Slider } from "@/components/ui/slider";
+import { RangeSlider } from "@/components/ui/range-slider";
 import { Select } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { 
@@ -231,7 +231,7 @@ export default function CaseStudyFilters({
               ROI Range: {filters.roiRange[0]}% - {filters.roiRange[1]}%
             </label>
             <div className="max-w-md">
-              <Slider
+              <RangeSlider
                 value={filters.roiRange}
                 onValueChange={(value) => updateFilter('roiRange', value)}
                 max={600}
@@ -252,7 +252,7 @@ export default function CaseStudyFilters({
               Engagement Improvement: {filters.engagementRange[0]}% - {filters.engagementRange[1]}%
             </label>
             <div className="max-w-md">
-              <Slider
+              <RangeSlider
                 value={filters.engagementRange}
                 onValueChange={(value) => updateFilter('engagementRange', value)}
                 max={500}
@@ -272,7 +272,7 @@ export default function CaseStudyFilters({
             <Checkbox
               id="featured"
               checked={filters.showFeaturedOnly}
-              onCheckedChange={(checked) => updateFilter('showFeaturedOnly', checked)}
+              onChange={(e) => updateFilter('showFeaturedOnly', e.target.checked)}
               className="data-[state=checked]:bg-oklch(240.325 100% 50%) data-[state=checked]:border-oklch(240.325 100% 50%)"
             />
             <label 
