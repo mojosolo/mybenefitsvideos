@@ -30,23 +30,68 @@ import {
 
 const services = [
   {
-    id: "foundation",
+    id: "video-production",
     icon: <Play className="h-6 w-6" />,
-    name: "Foundation Videos",
-    tagline: "Core 2-minute videos that explain your entire benefits package",
-    price: "$2,499",
-    duration: "Up to 2 minutes",
-    timeline: "3-4 weeks",
-    description: "Our signature service transforms complex benefits information into clear, engaging video content that employees actually watch and understand.",
-    features: [
-      "Professional scriptwriting and storyboarding",
-      "Custom graphics and animation", 
-      "High-quality voiceover narration",
-      "2 rounds of revisions included",
-      "HD video delivery in multiple formats",
-      "Mobile-optimized viewing experience",
-      "Analytics and engagement tracking",
-      "Brand alignment and custom styling"
+    name: "Video Production",
+    tagline: "Professional benefits videos from standard to full animation",
+    price: "Starting at $799/min",
+    duration: "1-10 minutes",
+    timeline: "10-30 business days",
+    description: "Four tiers of video production to match your budget and brand requirements, from stock footage to complete custom animations.",
+    services: [
+      {
+        name: "Standard Video",
+        price: "$799/minute + tax",
+        description: "Branded with your logo and colors, utilizing stock footage to create an engaging video.",
+        timeline: "15 business days",
+        features: [
+          "Professional scriptwriting",
+          "Branded graphics and animations", 
+          "Stock footage and imagery",
+          "High-quality voiceover",
+          "2 rounds of revisions",
+          "Multiple format delivery"
+        ]
+      },
+      {
+        name: "Semi-Custom Video",
+        price: "$999/minute + tax",
+        description: "Includes branded animations and transitions for enhanced visual appeal.",
+        timeline: "20 business days",
+        features: [
+          "Everything in Standard, plus:",
+          "Custom branded animations",
+          "Company-specific imagery",
+          "Enhanced transitions",
+          "Premium motion graphics"
+        ]
+      },
+      {
+        name: "Full Custom Video",
+        price: "$1,199/minute + tax", 
+        description: "Completely customized video production with unique animations and branding.",
+        timeline: "25 business days",
+        features: [
+          "Everything in Semi-Custom, plus:",
+          "Completely custom illustrations",
+          "Unique animation style",
+          "Custom character design",
+          "Bespoke visual elements"
+        ]
+      },
+      {
+        name: "Full Animation",
+        price: "$5,000 flat rate + tax",
+        description: "Premium animation package with custom character design and storytelling.",
+        timeline: "4-6 weeks",
+        features: [
+          "Premium animation package",
+          "Custom character design",
+          "Narrative storytelling",
+          "Complex scene composition",
+          "Advanced motion graphics"
+        ]
+      }
     ],
     benefits: [
       "3x higher employee engagement vs. PDFs",
@@ -65,9 +110,9 @@ const services = [
   {
     id: "teaser",
     icon: <Timer className="h-6 w-6" />,
-    name: "Teaser Videos",
+    name: "OE Teaser Videos",
     tagline: "Short 1-minute videos perfect for open enrollment campaigns",
-    price: "$999",
+    price: "$650 + tax",
     duration: "Up to 1 minute",
     timeline: "2-3 weeks", 
     description: "Create excitement and drive enrollment with short, punchy videos that highlight key benefits and motivate employee action.",
@@ -85,7 +130,7 @@ const services = [
       "Increases enrollment campaign reach",
       "Drives urgency for deadline-sensitive periods", 
       "Perfect for social media and email campaigns",
-      "Complements longer foundation videos"
+      "Complements longer standard videos"
     ],
     samples: [
       "Open Enrollment Countdown",
@@ -133,13 +178,13 @@ const services = [
     icon: <FileText className="h-6 w-6" />,
     name: "DIY PowerPoint License",
     tagline: "Transform your existing presentations into professional videos",
-    price: "$1,999 (AI Voice) / $2,999 (Human Voice)",
+    price: "$2,500 (AI Voice) + tax",
     duration: "Based on slides",
     timeline: "1-2 weeks",
-    description: "Upload your PowerPoint presentations and we'll convert them into professional video content with voiceover, transitions, and branding.",
+    description: "Upload your PowerPoint presentations and we'll convert them into professional video content with voiceover, transitions, and branding. Add $1,000 for human voice.",
     features: [
       "PowerPoint to video conversion",
-      "Professional AI or human voiceover",
+      "Professional AI voiceover (human +$1,000)",
       "Branded transitions and graphics",
       "Multiple format delivery",
       "Slide timing optimization",
@@ -166,10 +211,10 @@ const services = [
     icon: <Languages className="h-6 w-6" />,
     name: "Multi-Language Versions",
     tagline: "Reach your entire workforce in their preferred language",
-    price: "$299 per minute",
+    price: "$250/minute + tax",
     duration: "Same as original",
     timeline: "1-2 weeks after English final",
-    description: "Professional translation and localization of your videos into multiple languages with native speaker voiceovers.",
+    description: "Professional translation and localization of your videos into multiple languages with native speaker voiceovers. Available after English final approval.",
     features: [
       "Professional translation services",
       "Native speaker voiceover talent",
@@ -231,27 +276,27 @@ const services = [
 
 const packages = [
   {
-    name: "GOOD - Foundation Only",
-    price: "$2,499",
+    name: "GOOD - Video Only",
+    price: "$1,598",
     savings: "",
-    services: ["Foundation Video (2 minutes)"],
+    services: ["Standard Video (2 minutes)"],
     description: "Perfect for organizations getting started with benefits videos."
   },
   {
-    name: "BETTER - Foundation + Microsite",
-    price: "$6,498", 
-    savings: "Save $1,000",
-    services: ["Foundation Video (2 minutes)", "Bundled Custom Microsite"],
+    name: "BETTER - Video + Website",
+    price: "$6,597", 
+    savings: "Popular Choice",
+    services: ["Standard Video (2 minutes)", "Benefits Break Microsite"],
     description: "Comprehensive benefits communication with video + interactive tools."
   },
   {
     name: "BEST - Complete Package",
-    price: "$10,094",
+    price: "$10,347",
     savings: "Maximum Value",
     services: [
-      "Foundation Video (2 minutes)",
-      "Teaser Video (1 minute)", 
-      "Bundled Custom Microsite",
+      "Standard Video (2 minutes)",
+      "OE Teaser Video (1 minute)", 
+      "Benefits Break Microsite",
       "DIY PowerPoint License",
       "Alt-Language Version (2 minutes)"
     ],
@@ -260,7 +305,7 @@ const packages = [
 ];
 
 export default function ServiceDetails() {
-  const [activeService, setActiveService] = useState<string>("foundation");
+  const [activeService, setActiveService] = useState<string>("video-production");
 
   const activeServiceData = services.find(s => s.id === activeService);
 
@@ -288,7 +333,7 @@ export default function ServiceDetails() {
 
           <BlurFade delay={BLUR_FADE_DELAY * 3}>
             <p className="text-xl text-gray-600 leading-relaxed">
-              From 2-minute foundation videos to complete microsites, we offer everything 
+              From 2-minute standard videos to complete microsites, we offer everything 
               you need to transform your benefits communication and engage your employees.
             </p>
           </BlurFade>
