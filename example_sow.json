@@ -1,0 +1,13 @@
+{
+  "preset": "better",
+  "foundation": true,
+  "foundationMinutes": 2,
+  "extraMinutes": 0,
+  "teaser": false,
+  "microsite": "bundled",
+  "diyLicense": false,
+  "altLanguageMinutes": 0,
+  "rush": false,
+  "subscriptionPlan": "none",
+  "subscriptionMonths": 0
+}

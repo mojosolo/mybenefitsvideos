@@ -1,0 +1,112 @@
+name: Update DNS Records for mybenefitsvideos.com
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_ip:
+        description: 'Target IP address for DNS records'
+        required: true
+        default: '64.29.17.67'
+
+jobs:
+  update-dns:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Update DNS Records
+        run: |
+          echo "🚀 Starting DNS update for mybenefitsvideos.com"
+          echo "Target IP: ${{ github.event.inputs.target_ip }}"
+          
+          # Get zone ID
+          ZONE_RESPONSE=$(curl -s -X GET "https://api.cloudflare.com/client/v4/zones?name=mybenefitsvideos.com" \
+            -H "X-Auth-Email: ${{ secrets.CLOUDFLARE_EMAIL }}" \
+            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -H "Content-Type: application/json")
+          
+          echo "🔍 Zone API Response:"
+          echo "$ZONE_RESPONSE" | jq '.'
+          
+          ZONE_ID=$(echo "$ZONE_RESPONSE" | jq -r '.result[0].id // empty')
+          
+          if [ -z "$ZONE_ID" ]; then
+            echo "❌ Could not find zone for mybenefitsvideos.com"
+            echo "🔍 Trying to list all available zones..."
+            ALL_ZONES=$(curl -s -X GET "https://api.cloudflare.com/client/v4/zones" \
+              -H "X-Auth-Email: ${{ secrets.CLOUDFLARE_EMAIL }}" \
+              -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+              -H "Content-Type: application/json")
+            echo "$ALL_ZONES" | jq -r '.result[] | "  • \(.name) (ID: \(.id[0:8])...)"'
+            exit 1
+          fi
+          
+          echo "✅ Zone ID: $ZONE_ID"
+          
+          # Get current A records
+          RECORDS_RESPONSE=$(curl -s -X GET "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records?type=A" \
+            -H "X-Auth-Email: ${{ secrets.CLOUDFLARE_EMAIL }}" \
+            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -H "Content-Type: application/json")
+          
+          echo "📋 Current A records:"
+          echo "$RECORDS_RESPONSE" | jq -r '.result[] | "  • \(.name) → \(.content)"'
+          
+          # Update each A record
+          echo "🔄 Updating A records to ${{ github.event.inputs.target_ip }}..."
+          SUCCESS_COUNT=0
+          TOTAL_COUNT=0
+          
+          while IFS= read -r RECORD; do
+            if [ -z "$RECORD" ]; then continue; fi
+            
+            RECORD_ID=$(echo "$RECORD" | jq -r '.id')
+            CURRENT_IP=$(echo "$RECORD" | jq -r '.content')
+            RECORD_NAME=$(echo "$RECORD" | jq -r '.name')
+            TTL=$(echo "$RECORD" | jq -r '.ttl')
+            
+            TOTAL_COUNT=$((TOTAL_COUNT + 1))
+            
+            if [ "$CURRENT_IP" = "${{ github.event.inputs.target_ip }}" ]; then
+              echo "  ✅ $RECORD_NAME already points to ${{ github.event.inputs.target_ip }}"
+              SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
+              continue
+            fi
+            
+            echo "  🔄 Updating $RECORD_NAME from $CURRENT_IP to ${{ github.event.inputs.target_ip }}..."
+            
+            UPDATE_DATA=$(jq -n \
+              --arg type "A" \
+              --arg name "$RECORD_NAME" \
+              --arg content "${{ github.event.inputs.target_ip }}" \
+              --argjson ttl "$TTL" \
+              '{type: $type, name: $name, content: $content, ttl: $ttl}')
+            
+            UPDATE_RESPONSE=$(curl -s -X PUT "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records/$RECORD_ID" \
+              -H "X-Auth-Email: ${{ secrets.CLOUDFLARE_EMAIL }}" \
+              -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+              -H "Content-Type: application/json" \
+              -d "$UPDATE_DATA")
+            
+            SUCCESS=$(echo "$UPDATE_RESPONSE" | jq -r '.success')
+            
+            if [ "$SUCCESS" = "true" ]; then
+              echo "    ✅ Successfully updated!"
+              SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
+            else
+              echo "    ❌ Failed to update"
+              echo "    Error: $(echo "$UPDATE_RESPONSE" | jq -r '.errors[]?.message // "Unknown error"')"
+            fi
+            
+          done <<< "$(echo "$RECORDS_RESPONSE" | jq -c '.result[]')"
+          
+          echo ""
+          echo "=== Results ==="
+          echo "✅ Successfully updated: $SUCCESS_COUNT/$TOTAL_COUNT records"
+          
+          if [ $SUCCESS_COUNT -eq $TOTAL_COUNT ]; then
+            echo "🎉 All DNS records for mybenefitsvideos.com now point to ${{ github.event.inputs.target_ip }}"
+            echo "⏰ DNS changes typically take 1-5 minutes to propagate globally"
+          else
+            echo "❌ Some records failed to update"
+            exit 1
+          fi

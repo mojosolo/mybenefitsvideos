@@ -1,0 +1,442 @@
+"use client";
+
+import React from 'react';
+import { motion } from 'framer-motion';
+import { Card } from '@/components/ui/card';
+import { Switch } from '@/components/ui/switch';
+import { Slider } from '@/components/ui/slider';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import { 
+  type PricingSelections,
+  formatCurrency, 
+  SERVICE_PRICING 
+} from '@/lib/pricing';
+import { 
+  Video,
+  Clock,
+  Zap,
+  Globe,
+  FileText,
+  Mic,
+  AlertCircle,
+  Info,
+  CheckCircle,
+  Plus
+} from 'lucide-react';
+
+interface VideoOptionsProps {
+  selections: PricingSelections;
+  onSelectionsChange: (updates: Partial<PricingSelections>) => void;
+  errors: Record<string, string>;
+  isLoading: boolean;
+}
+
+interface OptionCard {
+  id: keyof PricingSelections;
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+  pricing: string;
+  tooltip?: string;
+  badge?: string;
+}
+
+const VIDEO_OPTIONS: OptionCard[] = [
+  {
+    id: 'foundation',
+    title: 'Foundation Video',
+    description: 'Your core benefits explanation video (2+ minutes)',
+    icon: <Video className="h-5 w-5" />,
+    pricing: formatCurrency(PRICING_CONFIG.FOUNDATION_PRICE),
+    tooltip: 'The foundation video is your primary benefits communication tool, explaining all major benefits in an engaging format.'
+  },
+  {
+    id: 'teaser',
+    title: 'OE Teaser Video',
+    description: 'Short promotional video for open enrollment (≤1 minute)',
+    icon: <Zap className="h-5 w-5" />,
+    pricing: formatCurrency(PRICING_CONFIG.TEASER_PRICE),
+    tooltip: 'Perfect for email campaigns and social media to drive engagement with your full benefits program.'
+  },
+  {
+    id: 'diyLicense',
+    title: 'DIY PowerPoint License',
+    description: 'Convert your presentations to video format',
+    icon: <FileText className="h-5 w-5" />,
+    pricing: formatCurrency(PRICING_CONFIG.DIY_PRICE),
+    tooltip: 'Use our platform to convert existing PowerPoint presentations into professional videos with AI voiceover.',
+    badge: 'AI Voice'
+  }
+];
+
+export default function VideoOptions({ 
+  selections, 
+  onSelectionsChange, 
+  errors, 
+  isLoading 
+}: VideoOptionsProps) {
+
+  const handleToggle = (option: keyof PricingSelections, value: boolean) => {
+    onSelectionsChange({ [option]: value });
+  };
+
+  const handleMinutesChange = (field: 'foundationMinutes' | 'extraMinutes' | 'altLanguageMinutes', value: number) => {
+    onSelectionsChange({ [field]: value });
+  };
+
+  const calculateExtraMinutesCost = () => {
+    return selections.extraMinutes * PRICING_CONFIG.EXTRA_MIN_PRICE;
+  };
+
+  const calculateAltLanguageCost = () => {
+    return selections.altLanguageMinutes * PRICING_CONFIG.ALT_LANG_PER_MIN;
+  };
+
+  const calculateDIYCost = () => {
+    let cost = PRICING_CONFIG.DIY_PRICE;
+    if (selections.diyHumanVoice) {
+      cost += PRICING_CONFIG.DIY_HUMAN_VOICE_UPGRADE;
+    }
+    return cost;
+  };
+
+  return (
+    <div className="space-y-8">
+      {/* Header */}
+      <div className="text-center max-w-2xl mx-auto">
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          Customize Your Video Package
+        </h2>
+        <p className="text-gray-600">
+          Fine-tune your video requirements to match your organization's needs.
+        </p>
+      </div>
+
+      {/* Current Package Summary */}
+      {selections.preset !== 'custom' && (
+        <Card className="p-4 bg-oklch(240.325_30%_95%) border-oklch(240.325_30%_70%)/20">
+          <div className="flex items-center gap-3">
+            <CheckCircle className="h-5 w-5 text-oklch(240.325_100%_50%)" />
+            <div>
+              <p className="font-medium text-gray-900">
+                Starting with {selections.preset?.toUpperCase()} package
+              </p>
+              <p className="text-sm text-gray-600">
+                You can add or remove features below to customize your package.
+              </p>
+            </div>
+          </div>
+        </Card>
+      )}
+
+      {/* Foundation Video Configuration */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="space-y-4"
+      >
+        <Card className="p-6">
+          <div className="flex items-start justify-between mb-4">
+            <div className="flex items-start gap-3">
+              <div className="p-2 bg-oklch(240.325_100%_50%)/10 rounded-lg">
+                <Video className="h-5 w-5 text-oklch(240.325_100%_50%)" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+                  Foundation Video
+                  <Badge variant="secondary" className="text-xs">Required</Badge>
+                </h3>
+                <p className="text-sm text-gray-600 mt-1">
+                  Your primary benefits explanation video
+                </p>
+              </div>
+            </div>
+            <Switch
+              checked={selections.foundation}
+              onCheckedChange={(checked) => handleToggle('foundation', checked)}
+              disabled={selections.preset !== 'custom'}
+            />
+          </div>
+
+          {selections.foundation && (
+            <div className="space-y-4 pt-4 border-t border-gray-100">
+              <div>
+                <Label className="block text-sm font-medium text-gray-700 mb-2">
+                  Video Length: {selections.foundationMinutes} minutes
+                </Label>
+                <Slider
+                  value={selections.foundationMinutes}
+                  onValueChange={(value) => handleMinutesChange('foundationMinutes', value)}
+                  min={2}
+                  max={10}
+                  step={1}
+                  formatValue={(value) => `${value} min`}
+                  className="mb-2"
+                />
+                <p className="text-xs text-gray-500">
+                  Price: {formatCurrency(PRICING_CONFIG.FOUNDATION_PRICE)} (includes up to {selections.foundationMinutes} minutes)
+                </p>
+                {errors.foundationMinutes && (
+                  <p className="text-sm text-red-600 mt-1">{errors.foundationMinutes}</p>
+                )}
+              </div>
+
+              {/* Extra Minutes */}
+              <div>
+                <Label className="block text-sm font-medium text-gray-700 mb-2">
+                  Additional Minutes: {selections.extraMinutes}
+                </Label>
+                <Slider
+                  value={selections.extraMinutes}
+                  onValueChange={(value) => handleMinutesChange('extraMinutes', value)}
+                  min={0}
+                  max={5}
+                  step={1}
+                  formatValue={(value) => value === 0 ? 'None' : `+${value} min`}
+                  className="mb-2"
+                />
+                {selections.extraMinutes > 0 && (
+                  <div className="bg-blue-50 p-3 rounded-lg">
+                    <div className="flex items-center gap-2 text-blue-800">
+                      <Plus className="h-4 w-4" />
+                      <span className="text-sm font-medium">
+                        Additional Cost: {formatCurrency(calculateExtraMinutesCost())}
+                      </span>
+                    </div>
+                    <p className="text-xs text-blue-600 mt-1">
+                      {formatCurrency(PRICING_CONFIG.EXTRA_MIN_PRICE)} per minute × {selections.extraMinutes} minutes
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </Card>
+      </motion.div>
+
+      {/* Other Video Options */}
+      <div className="grid md:grid-cols-2 gap-6">
+        {/* Teaser Video */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          <Card className="p-6 h-full">
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-start gap-3">
+                <div className="p-2 bg-yellow-100 rounded-lg">
+                  <Zap className="h-5 w-5 text-yellow-600" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900">OE Teaser Video</h3>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Short promotional video (≤1 minute)
+                  </p>
+                </div>
+              </div>
+              <Switch
+                checked={selections.teaser}
+                onCheckedChange={(checked) => handleToggle('teaser', checked)}
+              />
+            </div>
+            
+            {selections.teaser && (
+              <div className="pt-4 border-t border-gray-100">
+                <div className="bg-yellow-50 p-3 rounded-lg">
+                  <p className="text-sm text-yellow-800 font-medium">
+                    Price: {formatCurrency(PRICING_CONFIG.TEASER_PRICE)}
+                  </p>
+                  <p className="text-xs text-yellow-600 mt-1">
+                    Perfect for email campaigns and open enrollment promotion
+                  </p>
+                </div>
+              </div>
+            )}
+          </Card>
+        </motion.div>
+
+        {/* DIY License */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          <Card className="p-6 h-full">
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-start gap-3">
+                <div className="p-2 bg-purple-100 rounded-lg">
+                  <FileText className="h-5 w-5 text-purple-600" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900">DIY License</h3>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Convert PowerPoint to video
+                  </p>
+                </div>
+              </div>
+              <Switch
+                checked={selections.diyLicense}
+                onCheckedChange={(checked) => handleToggle('diyLicense', checked)}
+              />
+            </div>
+            
+            {selections.diyLicense && (
+              <div className="pt-4 border-t border-gray-100 space-y-3">
+                {/* Human Voice Upgrade */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label className="text-sm font-medium">Human Voiceover</Label>
+                    <p className="text-xs text-gray-500">
+                      +{formatCurrency(PRICING_CONFIG.DIY_HUMAN_VOICE_UPGRADE)} upgrade
+                    </p>
+                  </div>
+                  <Switch
+                    checked={selections.diyHumanVoice}
+                    onCheckedChange={(checked) => onSelectionsChange({ diyHumanVoice: checked })}
+                  />
+                </div>
+                
+                <div className="bg-purple-50 p-3 rounded-lg">
+                  <p className="text-sm text-purple-800 font-medium">
+                    Total Price: {formatCurrency(calculateDIYCost())}
+                  </p>
+                  <p className="text-xs text-purple-600 mt-1">
+                    {selections.diyHumanVoice ? 'Human voiceover' : 'AI voiceover'} included
+                  </p>
+                </div>
+              </div>
+            )}
+          </Card>
+        </motion.div>
+      </div>
+
+      {/* Alternative Language Versions */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+      >
+        <Card className="p-6">
+          <div className="flex items-start gap-3 mb-4">
+            <div className="p-2 bg-green-100 rounded-lg">
+              <Globe className="h-5 w-5 text-green-600" />
+            </div>
+            <div className="flex-1">
+              <h3 className="font-semibold text-gray-900">Alternative Language Versions</h3>
+              <p className="text-sm text-gray-600 mt-1">
+                Create versions in additional languages for diverse workforces
+              </p>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <Label className="block text-sm font-medium text-gray-700 mb-2">
+                Alternative Language Minutes: {selections.altLanguageMinutes}
+              </Label>
+              <Slider
+                value={selections.altLanguageMinutes}
+                onValueChange={(value) => handleMinutesChange('altLanguageMinutes', value)}
+                min={0}
+                max={10}
+                step={1}
+                formatValue={(value) => value === 0 ? 'None' : `${value} min`}
+                className="mb-2"
+              />
+              
+              {selections.altLanguageMinutes > 0 && (
+                <div className="bg-green-50 p-3 rounded-lg">
+                  <div className="flex items-center gap-2 text-green-800">
+                    <Globe className="h-4 w-4" />
+                    <span className="text-sm font-medium">
+                      Additional Cost: {formatCurrency(calculateAltLanguageCost())}
+                    </span>
+                  </div>
+                  <p className="text-xs text-green-600 mt-1">
+                    {formatCurrency(PRICING_CONFIG.ALT_LANG_PER_MIN)} per minute × {selections.altLanguageMinutes} minutes
+                  </p>
+                  <p className="text-xs text-green-600 mt-1">
+                    Common languages: Spanish, French, Mandarin, and more available
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        </Card>
+      </motion.div>
+
+      {/* Rush Delivery Option */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+      >
+        <Card className="p-6">
+          <div className="flex items-start justify-between">
+            <div className="flex items-start gap-3">
+              <div className="p-2 bg-red-100 rounded-lg">
+                <Clock className="h-5 w-5 text-red-600" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+                  Rush Delivery
+                  <Badge variant="destructive" className="text-xs">+50% Video Costs</Badge>
+                </h3>
+                <p className="text-sm text-gray-600 mt-1">
+                  2-week delivery instead of standard 3-4 weeks
+                </p>
+              </div>
+            </div>
+            <Switch
+              checked={selections.rush}
+              onCheckedChange={(checked) => handleToggle('rush', checked)}
+            />
+          </div>
+          
+          {selections.rush && (
+            <div className="mt-4 pt-4 border-t border-gray-100">
+              <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                <div className="flex items-center gap-2 text-red-800">
+                  <AlertCircle className="h-4 w-4" />
+                  <span className="text-sm font-medium">Rush Delivery Selected</span>
+                </div>
+                <p className="text-xs text-red-600 mt-1">
+                  50% surcharge applies to all video-related items. Microsite and licensing fees are not affected.
+                </p>
+              </div>
+            </div>
+          )}
+        </Card>
+      </motion.div>
+
+      {/* Microsite Integration Note */}
+      {selections.microsite !== 'none' && (
+        <Card className="p-4 bg-blue-50 border-blue-200">
+          <div className="flex items-center gap-2 text-blue-800">
+            <Info className="h-4 w-4" />
+            <p className="text-sm">
+              <strong>Microsite Included:</strong> Your videos will be integrated into a custom Benefits Break microsite 
+              {selections.microsite === 'bundled' ? ' with bundle savings!' : '.'}
+            </p>
+          </div>
+        </Card>
+      )}
+
+      {/* Timeline Estimate */}
+      <Card className="p-4 bg-gray-50">
+        <div className="text-center">
+          <Clock className="h-6 w-6 text-gray-600 mx-auto mb-2" />
+          <h3 className="font-semibold text-gray-900 mb-1">Estimated Timeline</h3>
+          <p className="text-sm text-gray-600">
+            {selections.rush ? '2 weeks (Rush delivery)' : '3-4 weeks (Standard delivery)'}
+          </p>
+          <p className="text-xs text-gray-500 mt-1">
+            Timeline includes script development, design, animation, voiceover, and revisions
+          </p>
+        </div>
+      </Card>
+    </div>
+  );
+}

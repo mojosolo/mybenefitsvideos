@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Mojo Solo Pricing Calculator Schema (2025)",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "preset": {
+      "description": "Convenience presets for Good/Better/Best or 'custom'.",
+      "type": "string",
+      "enum": [
+        "good",
+        "better",
+        "best",
+        "custom"
+      ],
+      "default": "custom"
+    },
+    "foundation": {
+      "type": "boolean",
+      "default": true
+    },
+    "foundationMinutes": {
+      "type": "integer",
+      "minimum": 2,
+      "maximum": 10,
+      "default": 2
+    },
+    "extraMinutes": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 60,
+      "default": 0
+    },
+    "teaser": {
+      "type": "boolean",
+      "default": false
+    },
+    "microsite": {
+      "type": "string",
+      "enum": [
+        "none",
+        "standalone",
+        "bundled"
+      ],
+      "default": "none"
+    },
+    "diyLicense": {
+      "type": "boolean",
+      "default": false
+    },
+    "altLanguageMinutes": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 120,
+      "default": 0
+    },
+    "rush": {
+      "type": "boolean",
+      "default": false
+    },
+    "subscriptionPlan": {
+      "type": "string",
+      "enum": [
+        "none",
+        "essential",
+        "growth",
+        "enterprise"
+      ],
+      "default": "none"
+    },
+    "subscriptionMonths": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 36,
+      "default": 12
+    }
+  },
+  "required": [
+    "foundation",
+    "foundationMinutes",
+    "extraMinutes",
+    "microsite",
+    "subscriptionPlan",
+    "subscriptionMonths"
+  ]
+}
